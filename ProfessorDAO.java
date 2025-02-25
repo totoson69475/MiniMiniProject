@@ -6,7 +6,7 @@ class ProfessorDAO
 {
     private ProfessorDB professorDB = new ProfessorDB();
     public ArrayList<ProfessorDTO> professorAry = new ArrayList<ProfessorDTO>();
-    public ArrayList<Lecture> lectureAry = new ArrayList<Lecture>();
+    public static ArrayList<Lecture> lectureAry = new ArrayList<Lecture>();
 
     ProfessorDAO(){ professorSet(); }
 
@@ -23,12 +23,18 @@ class ProfessorDAO
         Lecture createLecture = new Lecture(professorDTO.id, professorDTO.name,
                 coursesName, classRoom, classTime, maxStudent);
         lectureAry.add(createLecture);
+		professorDTO.subject.add(coursesName);
     }
     public void editLecture(ProfessorDTO professorDTO, int choiceLectureIdx, int choiceMenu, String changeValue){
         ArrayList<Lecture> MyLectureAry = new ArrayList<Lecture>();
         MyLectureAry = viewMyLecture(professorDTO);
 
         if(choiceMenu == 1){ // 강의명
+			for(int idx = 0; idx < professorDTO.subject.size(); idx++){
+				if(professorDTO.subject.get(idx).equals(MyLectureAry.get(choiceLectureIdx-1).getCoursesName())){
+					professorDTO.subject.set(idx, changeValue);
+				}
+			}
             MyLectureAry.get(choiceLectureIdx-1).setCoursesName(changeValue);
         }
         if(choiceMenu == 2){ // 강의장소
@@ -43,11 +49,26 @@ class ProfessorDAO
 
     }
 
-    public void deleteLecture(int professorId, String courseName){}
+    public void deleteLecture(ProfessorDTO professorDTO, int choiceLectureIdx){
+        ArrayList<Lecture> removeLectureList = new ArrayList<Lecture>();
+        removeLectureList = viewMyLecture(professorDTO);
+        System.out.println(choiceLectureIdx + ". " + removeLectureList.get(choiceLectureIdx-1).coursesName + "강의를 삭제했습니다.");
+
+		for(int idx = 0; idx < professorDTO.subject.size(); idx++){
+				if(professorDTO.subject.get(idx).equals(removeLectureList.get(choiceLectureIdx-1).getCoursesName())){
+					professorDTO.subject.remove(idx);
+				}
+		}
+        for(int idx = 0; idx < lectureAry.size(); idx++){
+            if(lectureAry.get(idx).coursesName.equals(removeLectureList.get(choiceLectureIdx-1).coursesName)){
+                lectureAry.remove(idx);
+            }
+        }
+    }
 
     public ArrayList<Lecture> viewMyLecture(ProfessorDTO professorDTO){
-        ArrayList<Lecture> searchMyLectureAry = new ArrayList<Lecture>();
         int cnt = 1;
+        ArrayList<Lecture> searchMyLectureAry = new ArrayList<Lecture>();
 
         for(int idx = 0; idx < lectureAry.size(); idx++){
             if(lectureAry.get(idx).professorID.equals(professorDTO.id)){
@@ -65,15 +86,51 @@ class ProfessorDAO
 
 
     //----------------------------------성적 생성,수정,삭제----------------------------------
-    public void registerGrade(int professorId){}
-    public void editGrade(int professorId, int studentId, String grades){}
-    public void deleteGrade(int professorId, int studentId, String grades){}
+    public void registerGrade(String studentID, String courseName, String grades){
+        for(int stuAryIdx = 0; stuAryIdx < StudentDAO.stuAry.length; stuAryIdx++){
+            if(StudentDAO.stuAry[stuAryIdx].getId().equals(studentID)) {
+                StudentDAO.stuAry[stuAryIdx].addGrade(courseName, grades);
+            }
+        }
+	}
+    public void editGrade(String studentID, String courseName, String grades){
+        for(int stuAryIdx = 0; stuAryIdx < StudentDAO.stuAry.length; stuAryIdx++) {
+            if (StudentDAO.stuAry[stuAryIdx].getId().equals(studentID)) {
+                StudentDAO.stuAry[stuAryIdx].addGrade(courseName, grades);
+            }
+        }
+    }
+    public void deleteGrade(String studentID, String courseName){
+        for(int stuAryIdx = 0; stuAryIdx < StudentDAO.stuAry.length; stuAryIdx++) {
+            if (StudentDAO.stuAry[stuAryIdx].getId().equals(studentID)) {
+                StudentDAO.stuAry[stuAryIdx].addGrade(courseName, "미입력");
+            }
+        }
+    }
 //----------------------------------성적 생성,수정,삭제----------------------------------
 
 
     //----------------------------------출결 생성,수정,삭제----------------------------------
-    public void registerAttendance(int professorId, int studentId){}
-    public void editAttendance(int professorId, int studentId, String attendance){}
-    public void deleteAttendance(int professorId, int studentId, String attendance){}
+    public void registerAttendance(String studentID, String courseName, int week, String attendance){
+        for(int stuAryIdx = 0; stuAryIdx < StudentDAO.stuAry.length; stuAryIdx++){
+            if(StudentDAO.stuAry[stuAryIdx].getId().equals(studentID)) {
+                StudentDAO.stuAry[stuAryIdx].addAttendance(courseName, week, attendance);
+            }
+        }
+    }
+    public void editAttendance(String studentID, String courseName, int week, String attendance){
+		for(int stuAryIdx = 0; stuAryIdx < StudentDAO.stuAry.length; stuAryIdx++){
+            if(StudentDAO.stuAry[stuAryIdx].getId().equals(studentID)) {
+                StudentDAO.stuAry[stuAryIdx].addAttendance(courseName, week, attendance);
+            }
+        }
+	}
+    public void deleteAttendance(String studentID, String courseName, int week){
+		for(int stuAryIdx = 0; stuAryIdx < StudentDAO.stuAry.length; stuAryIdx++){
+            if(StudentDAO.stuAry[stuAryIdx].getId().equals(studentID)) {
+                StudentDAO.stuAry[stuAryIdx].addAttendance(courseName, week, "결석");
+            }
+        }
+	}
 //----------------------------------출결 생성,수정,삭제----------------------------------
 }

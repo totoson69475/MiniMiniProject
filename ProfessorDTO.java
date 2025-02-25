@@ -1,22 +1,24 @@
 package classes;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 class ProfessorDTO extends User
 {
-    String subject;
+    ArrayList<String> subject = new ArrayList<String>();
     Scanner input = new Scanner(System.in);
 
-    public ProfessorDTO(String id, String password,String name, String phoneNumber, String email, String address, String department, String attendance, String subject){
-        super(id, password, name, phoneNumber, email, address, department, attendance);
-        this.subject = subject;
+    public ProfessorDTO(String id, String password,String name, String phoneNumber, String email, String address, String department){
+        super(id, password, name, phoneNumber, email, address, department);
     }
 
-    public String getSubject(){
+    public ArrayList<String> getSubject(){
         return subject;
     }
-    public void setSubject(String subject){
-        this.subject = subject;
+    public void setSubject(String subject, String newSubject){
+		for(int idx = 0; idx < this.subject.size(); idx++){
+			if(this.subject.get(idx).equals(subject)){this.subject.set(idx,newSubject);}
+		}
     }
 
     public void viewUserInfo(){
@@ -27,7 +29,6 @@ class ProfessorDTO extends User
         System.out.println("이메일 : " + this.getEmail());
         System.out.println("주소 : " + this.getAddress());
         System.out.println("학과 : " + this.getDepartment());
-        System.out.println("출석현황 : " + this.getAttendance());
         System.out.println("담당과목 : " + this.getSubject());
     }
 

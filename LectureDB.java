@@ -12,11 +12,11 @@ class  LectureDB
     String classTime[] = {"3", "3", "3", "2", "2"};
     int[] enrolledStudent = {0, 0, 0, 0, 0};
     int[] maxStudent = {5, 5, 5, 5, 5};
-/*
+    /*
 	for(int i = 0; i < coursesName.length; i++){
 		lectureAry.add(new LectureDTO(coursesName[i], classRoom[i],
 			classTime[i], enrolledStudent[i], maxStudent[i]));
 		}
-		*/
+	*/
 
 }

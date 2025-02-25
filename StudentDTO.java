@@ -28,8 +28,13 @@ class  StudentDTO extends User
     // 수강 강의 추가 메서드
     public void addCourses(Lecture lecture) {
         courses.add(lecture);
-        grade.add(new LectureGrade(lecture.getCoursesName(), "P"));			// 임시 성적 추가
-        attendance.add(new LectureAttendance(lecture.getCoursesName(), "조퇴"));			// 임시 출결 추가
+        grade.add(new LectureGrade(lecture.getCoursesName(), "미입력"));// 임시 성적 추가
+		/*
+        for(int idx = 0; idx < 15; idx++){
+            attendance.add(new LectureAttendance(lecture.getCoursesName(),"결석"));			// 임시 출결 추가
+        }
+		*/
+		attendance.add(new LectureAttendance(lecture.getCoursesName(),"결석"));
     }
 
     // 수강 강의 삭제 메서드(사용 X)
@@ -80,11 +85,11 @@ class  StudentDTO extends User
     }
 
     // 강의 출석 추가(수정?)
-    public void addAttendance(String courseName, String _attendance) {
+    public void addAttendance(String courseName, int week, String _attendance) {
         boolean found = false;
         for (LectureAttendance temp : attendance) {
             if (temp.getCourseName().equals(courseName)) {
-                temp.setAttendance(_attendance);  // 기존 강의 출결(P로 지정) 업데이트
+                temp.setAttendance(week-1, _attendance);  // 기존 강의 출결(P로 지정) 업데이트
                 found = true;
                 break;
             }
@@ -95,20 +100,50 @@ class  StudentDTO extends User
     }
 
     // 강의 출석 출력
+	/*
     public void printAttendance() {
         if (attendance.isEmpty()) {
             System.out.println("입력된 출결이 없습니다.");
         } else {
+			int maxCourseNameLength = 0;
+			for(LectureAttendance temp : attendance){
+				maxCourseNameLength = Math.max(maxCourseNameLength, temp.getCourseName().length());
+			}
             for (LectureAttendance temp : attendance) {
-                System.out.println("강의: " + temp.getCourseName() + " | 출석: " + temp.getAttendance());
+                //System.out.println("강의: " + temp.getCourseName() + " | 출석: " + temp.getAttendance());
+				System.out.print("강의: " + temp.getCourseName());
+				for(int spaceLength = temp.getCourseName().length(); spaceLength < maxCourseNameLength; spaceLength++){
+					System.out.print(" ");
+				}
+				System.out.print(" | 출석: [");
+				for(int idx = 0; idx < temp.attendance.size(); idx++){
+					System.out.print(idx+1 + "주차: " + temp.attendance.get(idx));
+					if(idx != 14) System.out.print(", ");
+				}
+				System.out.println("]");
             }
         }
     }
-
-
-
-
-
+	*/
+	public void printAttendance() {
+		if (attendance.isEmpty()) {
+			System.out.println("입력된 출결이 없습니다.");
+		} else {
+			for (LectureAttendance temp : attendance) {
+				System.out.println("강의명 : " + temp.getCourseName());
+				int cnt = 0;
+				for (int i = 0; i < temp.getAttendance().size(); i++) {
+					System.out.print((i + 1) + "주차: [" + temp.getAttendance().get(i) + "]  ");
+					cnt++;
+					if( cnt == 5 || cnt == 10){
+						System.out.println();	// 5주차, 10주차에서 줄바꿈
+					}
+				}
+				System.out.println("\n"); // 줄바꿈
+			}
+			System.out.println();
+		}
+	}
 
     public void setId(String id){
         this.id = id;

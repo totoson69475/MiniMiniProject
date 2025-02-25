@@ -1,17 +1,19 @@
 package classes;
 
+import java.util.ArrayList;
+
 class Lecture
 {
     //교수 ID
     public String professorID;
     // 교수 이름
     public String professorName;
-
     public String coursesName;
     public String classRoom;
     public String classTime;
     public int enrolledStudent;
     public int maxStudent;
+	public ArrayList<String> studentID = new ArrayList<String>();
 
     Lecture(String professorID, String professorName, String coursesName, String classRoom,
             String classTime, int enrolledStudent, int maxStudent){
@@ -32,6 +34,16 @@ class Lecture
         this.classTime = classTime;
         this.maxStudent = maxStudent;
 
+    }
+
+    Lecture(Lecture lecture){
+        this.professorID = lecture.getProfessorID();
+        this.professorName = lecture.getProfessorName();
+        this.coursesName = lecture.getCoursesName();
+        this.classRoom = lecture.getClassRoom();
+        this.classTime = lecture.getClassTime();
+        this.enrolledStudent = lecture.getEnrolledStudent();
+        this.maxStudent = lecture.getMaxStudent();
     }
     public Lecture(){};
 
@@ -90,4 +102,5 @@ class Lecture
     public void setMaxStudent(int maxStudent) {
         this.maxStudent = maxStudent;
     }
+
 }

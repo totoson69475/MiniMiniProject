@@ -2,6 +2,7 @@ package classes;
 
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 
 class  Main
 {
@@ -130,6 +131,7 @@ class  Main
     }
 
     void studentMenu(){
+        dao.lectureSet();
         while(true){
             Liner.mLine('=',31);
             System.out.println("  ## 학생 학사 관리 시스템 ##  ");
@@ -242,21 +244,30 @@ class  Main
                 }
 
                 if(selectLectureMenu.equals("2")){
-                    System.out.print("## 변경 가능한 강의 목록 ##");
+                    System.out.println("## 변경 가능한 강의 목록 ##");
                     professorDao.viewMyLecture(loginProfessor);
-                    System.out.print("변경하실 강의를 선택해주세요. : ");
+                    System.out.print("변경하실 강의를 선택해주세요. [0. 돌아가기]: ");
                     int choiceLectureIdx;
                     choiceLectureIdx = input.nextInt();
                     input.nextLine();
 
-                    System.out.println("변경하실 내용을 선택해주세요.");
+                    if(choiceLectureIdx == 0){
+                        professorMenu();
+                    }
+
                     System.out.println("1. 강의명");
                     System.out.println("2. 강의장소");
                     System.out.println("3. 강의시간");
                     System.out.println("4. 강의 최대 수강 가능 인원수");
+                    System.out.println("\n0. 돌아가기");
+
+                    System.out.print("변경하실 내용을 선택해주세요. [0. 돌아가기] : ");
 
                     int choiceMenu = input.nextInt();
                     input.nextLine();
+                    if(choiceMenu == 0){
+                        professorMenu();
+                    }
 
                     System.out.print("변경하실 값을 입력해주세요. : ");
                     String changeValue = input.nextLine();
@@ -264,47 +275,253 @@ class  Main
                     professorDao.editLecture(loginProfessor, choiceLectureIdx, choiceMenu, changeValue);
                 }
 
-                if(selectLectureMenu.equals("3")){}
+                if(selectLectureMenu.equals("3")){
+                    System.out.println("## 삭제 가능한 강의 목록 ##");
+                    professorDao.viewMyLecture(loginProfessor);
+                    System.out.print("삭제하실 강의를 선택해주세요. : ");
+                    int choiceLectureIdx;
+                    choiceLectureIdx = input.nextInt();
+                    input.nextLine();
+
+                    professorDao.deleteLecture(loginProfessor, choiceLectureIdx);
+
+                }
+
                 if(selectLectureMenu.equals("4")){
                     System.out.println("## "+loginProfessor.name+" 교수님의 담당 강의 ##");
                     searchMyLectureAry = professorDao.viewMyLecture(loginProfessor);
-                    System.out.print("상세정보를 보고싶은 강의를 선택하세요. [Q : 돌아가기] : ");
-                    int choiceLecture = input.nextInt();
-                    input.nextLine();
-                    if((char)choiceLecture == 81 || (char)choiceLecture == 113){
-                        System.out.println("돌아가기");
+                    System.out.println("\n0. 돌아가기");
+
+                    int choiceLecture = -1; // 초기값 설정
+                    while (true) {
+                        System.out.print("상세정보를 보고싶은 강의를 선택하세요. [0 : 돌아가기] : ");
+                        try {
+                            choiceLecture = input.nextInt();
+                            input.nextLine(); // 버퍼 비우기
+
+                            if (choiceLecture == 0) {
+                                professorMenu();
+                                break; 
+                            }
+
+                            // 선택한 강의 정보 출력
+                            System.out.println("담당교수 : " + searchMyLectureAry.get(choiceLecture - 1).getProfessorName());
+                            System.out.println("강의명 : " + searchMyLectureAry.get(choiceLecture - 1).getCoursesName());
+                            System.out.println("강의시간 : " + searchMyLectureAry.get(choiceLecture - 1).getClassTime());
+                            System.out.println("수강 학생 인원 수 : " + searchMyLectureAry.get(choiceLecture - 1).getEnrolledStudent());
+                            System.out.println("최대 수강 가능 인원 수 : " + searchMyLectureAry.get(choiceLecture - 1).getMaxStudent());
+							if(searchMyLectureAry.get(choiceLecture - 1).studentID.isEmpty()){
+								System.out.println("수강중인 학생이 없습니다.");
+							}else {
+								ArrayList<String> enrolledStudentName = new ArrayList<String>();
+								for(int idx = 0; idx < searchMyLectureAry.get(choiceLecture - 1).studentID.size(); idx++){
+									for(int stuAryIdx = 0; stuAryIdx < StudentDAO.stuAry.length; stuAryIdx++){
+										if(StudentDAO.stuAry[stuAryIdx].getId().equals(searchMyLectureAry.get(choiceLecture - 1).studentID.get(idx))){
+											enrolledStudentName.add(StudentDAO.stuAry[stuAryIdx].getName());
+										}
+									}
+								}
+								System.out.println("수강 학생 명단 : " + enrolledStudentName.toString());
+							}
+                            break; 
+
+                        } catch (InputMismatchException e) {
+                            System.out.println("잘못된 입력입니다. 숫자를 입력해주세요.");
+                            input.nextLine(); 
+							
+                        } catch (IndexOutOfBoundsException e) {
+                            System.out.println("유효하지 않은 강의 선택입니다. 다시 선택해주세요.");
+                        }					
                     }
-
-                    System.out.println("담당교수 : " + searchMyLectureAry.get(choiceLecture-1).getProfessorName());
-                    System.out.println("강의명 : " + searchMyLectureAry.get(choiceLecture-1).getCoursesName());
-                    System.out.println("강의시간 : " + searchMyLectureAry.get(choiceLecture-1).getClassTime());
-                    System.out.println("수강 학생 명단 : " + searchMyLectureAry.get(choiceLecture-1).getEnrolledStudent());
-                    System.out.println("최대 수강 가능 인원 수 : " + searchMyLectureAry.get(choiceLecture-1).getMaxStudent());
-
-
-
                 }
 
 
             }
 
             if(vRead1.equals("2")){
-                System.out.println("성적 관리 실행");
-                System.out.println("성적을 관리할 과목을 선택하십시오.");
-                System.out.println("성적을 관리할 학생을 선택하십시오.");
-                System.out.println("01. 성적 입력");
-                System.out.println("02. 성적 수정");
-                System.out.println("03. 성적 삭제");
-                System.out.println("\n\nQ.돌아가기");
+                System.out.println("## "+loginProfessor.name+" 교수님의 담당 강의 ##");
+				searchMyLectureAry = professorDao.viewMyLecture(loginProfessor);
+                System.out.println("\n0. 돌아가기");
+
+				int choiceLecture = -1; // 초기값 설정
+                    while (true) {
+                        System.out.print("성적을 관리할 과목을 선택하십시오. [0. 돌아가기] : ");
+                        try {
+                            choiceLecture = input.nextInt();
+                            input.nextLine(); // 버퍼 비우기
+
+                            if (choiceLecture == 0) {
+                                professorMenu();
+                                break; 
+                            }
+
+                            // 선택한 강의 정보 출력
+							if(searchMyLectureAry.get(choiceLecture - 1).studentID.isEmpty()){
+								System.out.println("수강중인 학생이 없습니다.");
+							}else {
+                                ArrayList<String> enrolledStudentID = new ArrayList<String>();
+								ArrayList<String> enrolledStudentName = new ArrayList<String>();
+								for(int idx = 0; idx < searchMyLectureAry.get(choiceLecture - 1).studentID.size(); idx++){
+									for(int stuAryIdx = 0; stuAryIdx < StudentDAO.stuAry.length; stuAryIdx++){
+										if(StudentDAO.stuAry[stuAryIdx].getId().equals(searchMyLectureAry.get(choiceLecture - 1).studentID.get(idx))){
+                                            enrolledStudentID.add(StudentDAO.stuAry[stuAryIdx].getId());
+											enrolledStudentName.add(StudentDAO.stuAry[stuAryIdx].getName());
+										}
+									}
+								}
+								Liner.mLine('=',31);
+								System.out.println("  ## "+searchMyLectureAry.get(choiceLecture - 1).coursesName+"과목 수강 학생 명단 ##");
+								Liner.mLine('=',31);
+								int cnt = 0;
+								for(String studentName : enrolledStudentName){
+									System.out.println((cnt+1) + ". "+searchMyLectureAry.get(choiceLecture - 1).studentID.get(cnt) +" "+ studentName);
+                                    cnt++;
+								}
+
+								System.out.print("\n\n성적을 관리할 학생을 선택하십시오. : ");
+								int choiceStudent = 0;
+								choiceStudent = input.nextInt();
+								input.nextLine(); // 버퍼 비우기
+								
+								System.out.println(enrolledStudentName.get(choiceStudent-1)+"의 성적관리를 선택하였습니다.");
+								Liner.mLine('-',31);
+								System.out.println("1. 성적 입력");
+								System.out.println("2. 성적 수정");
+								System.out.println("3. 성적 삭제");
+								System.out.println("\n\n0.돌아가기");
+								System.out.print("원하시는 항목을 선택하십시오. : ");
+
+								int gradeControl = 0;
+								gradeControl = input.nextInt();
+								input.nextLine(); // 버퍼 비우기
+
+								if(gradeControl == 1){
+									System.out.print("부여하실 성적을 입력해주세요 : ");
+									String grade = "";
+									grade = input.nextLine();
+									professorDao.registerGrade(enrolledStudentID.get(choiceStudent-1),searchMyLectureAry.get(choiceLecture - 1).coursesName,grade);
+								}
+								if(gradeControl == 2){
+                                    System.out.print("수정하실 성적을 입력해주세요 : ");
+                                    String grade = "";
+                                    grade = input.nextLine();
+                                    professorDao.editGrade(enrolledStudentID.get(choiceStudent-1),searchMyLectureAry.get(choiceLecture - 1).coursesName,grade);
+								}
+								if(gradeControl == 3){
+                                    System.out.println("성적을 삭제하였습니다.");
+									professorDao.deleteGrade(enrolledStudentID.get(choiceStudent-1),searchMyLectureAry.get(choiceLecture - 1).coursesName);
+								}
+								break; 
+							}
+                        } catch (InputMismatchException e) {
+                            System.out.println("잘못된 입력입니다. 숫자를 입력해주세요.");
+                            input.nextLine(); 
+							
+                        } catch (IndexOutOfBoundsException e) {
+                            System.out.println("유효하지 않은 강의 선택입니다. 다시 선택해주세요.");
+                        }					
+                    }
             }
+
             if(vRead1.equals("3")){
-                System.out.println("출결 조회 실행");
-                System.out.println("출결을 관리할 과목을 선택하십시오.");
-                System.out.println("출결을 관리할 학생을 선택하십시오.");
-                System.out.println("01. 출결 입력");
-                System.out.println("02. 출결 수정");
-                System.out.println("03. 출결 삭제");
-                System.out.println("\n\nQ.돌아가기");
+                System.out.println("## "+loginProfessor.name+" 교수님의 담당 강의 ##");
+                searchMyLectureAry = professorDao.viewMyLecture(loginProfessor);
+                System.out.println("\n0. 돌아가기");
+
+                int choiceLecture = -1; // 초기값 설정
+                while (true) {
+                    System.out.print("출석을 관리할 과목을 선택하십시오. [0. 돌아가기] : ");
+                    try {
+                        choiceLecture = input.nextInt();
+                        input.nextLine(); // 버퍼 비우기
+
+                        if (choiceLecture == 0) {
+                            professorMenu();
+                            break;
+                        }
+
+                        // 선택한 강의 정보 출력
+                        if(searchMyLectureAry.get(choiceLecture - 1).studentID.isEmpty()){
+                            System.out.println("수강중인 학생이 없습니다.");
+                        }else {
+                            ArrayList<String> enrolledStudentID = new ArrayList<String>();
+                            ArrayList<String> enrolledStudentName = new ArrayList<String>();
+                            for(int idx = 0; idx < searchMyLectureAry.get(choiceLecture - 1).studentID.size(); idx++){
+                                for(int stuAryIdx = 0; stuAryIdx < StudentDAO.stuAry.length; stuAryIdx++){
+                                    if(StudentDAO.stuAry[stuAryIdx].getId().equals(searchMyLectureAry.get(choiceLecture - 1).studentID.get(idx))){
+                                        enrolledStudentID.add(StudentDAO.stuAry[stuAryIdx].getId());
+                                        enrolledStudentName.add(StudentDAO.stuAry[stuAryIdx].getName());
+                                    }
+                                }
+                            }
+                            Liner.mLine('=',31);
+                            System.out.println("  ## "+searchMyLectureAry.get(choiceLecture - 1).coursesName+"과목 수강 학생 명단 ##");
+                            Liner.mLine('=',31);
+                            int cnt = 0;
+                            for(String studentName : enrolledStudentName){
+                                System.out.println((cnt+1) + ". "+searchMyLectureAry.get(choiceLecture - 1).studentID.get(cnt) +" "+ studentName);
+                                cnt++;
+                            }
+
+                            System.out.print("\n\n출석을 관리할 학생을 선택하십시오. : ");
+                            int choiceStudent = 0;
+                            choiceStudent = input.nextInt();
+                            input.nextLine(); // 버퍼 비우기
+
+                            System.out.println(enrolledStudentName.get(choiceStudent-1)+"의 출석관리를 선택하였습니다.");
+                            Liner.mLine('-',31);
+                            System.out.println("1. 출석 입력");
+                            System.out.println("2. 출석 수정");
+                            System.out.println("3. 출석 삭제");
+                            System.out.println("\n\n0.돌아가기");
+                            System.out.print("원하시는 항목을 선택하십시오. : ");
+
+                            int gradeControl = 0;
+                            gradeControl = input.nextInt();
+                            input.nextLine(); // 버퍼 비우기
+
+                            if(gradeControl == 1){
+                                System.out.print("현재 주차를 입력해주세요 : ");
+                                int week = 0;
+                                week = input.nextInt();
+                                input.nextLine();
+
+                                System.out.print("부여하실 출석 내용을 입력해주세요 : ");
+                                String attendance = "";
+                                attendance = input.nextLine();
+                                professorDao.registerAttendance(enrolledStudentID.get(choiceStudent-1),searchMyLectureAry.get(choiceLecture - 1).coursesName,week,attendance);
+
+                            }
+                            if(gradeControl == 2){
+								System.out.print("수정하실 주차를 입력해주세요 : ");
+                                int week = 0;
+                                week = input.nextInt();
+                                input.nextLine();
+
+                                System.out.print("수정하실 출석 내용을 입력해주세요 : ");
+                                String attendance = "";
+                                attendance = input.nextLine();
+                                professorDao.editAttendance(enrolledStudentID.get(choiceStudent-1),searchMyLectureAry.get(choiceLecture - 1).coursesName,week,attendance);
+                            }
+                            if(gradeControl == 3){
+								System.out.print("삭제하실 주차를 입력해주세요 : ");
+                                int week = 0;
+                                week = input.nextInt();
+                                input.nextLine();
+                                System.out.println("출석 내용을 삭제하였습니다.");
+                                professorDao.deleteAttendance(enrolledStudentID.get(choiceStudent-1),searchMyLectureAry.get(choiceLecture - 1).coursesName,week);
+                            }
+                            break;
+                        }
+                    } catch (InputMismatchException e) {
+                        System.out.println("잘못된 입력입니다. 숫자를 입력해주세요.");
+                        input.nextLine();
+
+                    }
+                    catch (IndexOutOfBoundsException e) {
+                        System.out.println("유효하지 않은 선택입니다. 다시 선택해주세요.");
+                    }
+                }
             }
             if(vRead1.equals("4")){
                 loginProfessor.viewUserInfo();
@@ -338,11 +555,12 @@ class  Main
 		*/
 
     }
+
     public static void main(String[] args)
     {
         Main obj = new Main();
         obj.dao.stuSet();
-        obj.dao.lectureSet();
+        // obj.dao.lectureSet(); -> 시작할때 DB 생성시 오류 로그인한 이후에 DB 불러오도록 변경
         obj.startMenu();
     }
 }

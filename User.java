@@ -9,10 +9,10 @@ abstract public class User {
     protected String email;
     protected String address;
     protected String department;
-    protected String attendance;
+
 
     // 생성자
-    public User(String id, String password,String name, String phoneNumber, String email, String address, String department, String attendance) {
+    public User(String id, String password,String name, String phoneNumber, String email, String address, String department) {
         this.id = id;
         this.password = password;
         this.name = name;
@@ -20,7 +20,6 @@ abstract public class User {
         this.email = email;
         this.address = address;
         this.department = department;
-        this.attendance = attendance;
     }
     User(){};
 
@@ -85,13 +84,7 @@ abstract public class User {
     }
 
 
-    public String getAttendance() {
-        return attendance;
-    }
-
-    public void setAttendance(String attendance) {
-        this.attendance = attendance;
-    }
+    
 
     public void viewUserInfo() {
 

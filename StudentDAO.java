@@ -6,8 +6,8 @@ class  StudentDAO extends User
 {
     UserAPI Liner = new UserAPI();
     LectureDB lectureDB = new LectureDB();
-    StudentDB db = new StudentDB();
-    StudentDTO stuAry[] = new StudentDTO[db.id.length];
+    public static StudentDB db = new StudentDB();
+    public static StudentDTO stuAry[] = new StudentDTO[db.id.length];
     StudentDTO stuDto = new StudentDTO();
     // SelectedLecture selectedLecture = new SelectedLecture();
     ArrayList<Lecture> lectureAry = new ArrayList<Lecture>();
@@ -28,10 +28,16 @@ class  StudentDAO extends User
         }
     }
 
-    public void lectureSet(){
-        for(int i = 0; i < lectureDB.coursesName.length; i++){
-            lectureAry.add(new Lecture(lectureDB.professorID, lectureDB.professorName, lectureDB.coursesName[i], lectureDB.classRoom[i],
-                    lectureDB.classTime[i], lectureDB.enrolledStudent[i], lectureDB.maxStudent[i]));
+    // 그냥 아예 ProfessorDAO의 lecture를 그대로 가져다 사용함으로써 필요없어질수도 있습니다.
+    public void lectureSet(){ // ProfessorDAO의 lectureAry와 연동하도록 변경 이제 교수가 입력한 강의를 가져온다.
+        if(lectureAry.isEmpty()) { // lectureAry가 비어있으면 그냥 바로 전체 다 추가.
+            for(int i = 0; i < ProfessorDAO.lectureAry.size(); i++) {
+                lectureAry.add(new Lecture(ProfessorDAO.lectureAry.get(i)));
+            }
+        } else { // lecutreAry가 비어있지 않다면 없는 부분(새로 추가한 강의)만 새로 가져와서 추가
+            for(int i = lectureAry.size(); i < ProfessorDAO.lectureAry.size(); i++) {
+                lectureAry.add(new Lecture(ProfessorDAO.lectureAry.get(i)));
+            }
         }
     }
 
@@ -59,8 +65,8 @@ class  StudentDAO extends User
         System.out.println("수강하고자 하는 강의 번호를 고르세요.[뒤로가기: Q ]");
         while(true){
             System.out.println("     <현재 강의 목록>     ");
-            for (int i = 0; i < lectureAry.size(); i++) {
-                System.out.println("강의 번호" + (i + 1) + ") " + lectureAry.get(i).getCoursesName());
+            for (int i = 0; i < ProfessorDAO.lectureAry.size(); i++) {
+                System.out.println("강의 번호" + (i + 1) + ") " + ProfessorDAO.lectureAry.get(i).getCoursesName());
             }
             System.out.printf("선택한 강의: ");
             String userInput = input.nextLine();
@@ -75,7 +81,7 @@ class  StudentDAO extends User
                     Liner.mLine('#', 31);
                 } else {
                     int tempInt = Integer.parseInt(userInput) - 1;                                  // 선택한 번호에서 1을 감소하여 index값 추출
-                    Lecture selectLecture = lectureAry.get(tempInt);                             // selectLecture에 선택한 index값 강의 정보 저장
+                    Lecture selectLecture = ProfessorDAO.lectureAry.get(tempInt);                             // selectLecture에 선택한 index값 강의 정보 저장
                     if(selectLecture.getEnrolledStudent() >= selectLecture.getMaxStudent()){			// selectLecture의 정원이 다 찬 경우 강의 재선택
                         Liner.mLine('#', 31);
                         System.out.println("강의 정원이 다 찼습니다.");
@@ -84,6 +90,8 @@ class  StudentDAO extends User
                     } else {																			// selectLecture 강의에 정원이 아직 안 찬 경우
                         stuDto.addCourses(selectLecture);                                               // StudentDTO의 수강 강의 정보(Lectures) 배열에 추가
                         selectLecture.setEnrolledStudent(selectLecture.getEnrolledStudent() + 1);       // 선택한 강의 수강 학생 수 1 증가
+						selectLecture.studentID.add(stuDto.getId());
+
 						/*
 						for(LectureDTO lecture : lectureAry){   // 학생 수 증가 정상 작동 여부 확인
 							System.out.println(lecture.getCoursesName() + " 강의의 현재 학생 수: " + lecture.getEnrolledStudent());
@@ -128,7 +136,7 @@ class  StudentDAO extends User
             }
         }
         StudentDTO stuDto = stuAry[findIndex];
-        System.out.println("강의별 출석을 출력합니다");
+        System.out.println("강의별 출석을 출력합니다\n");
         // System.out.println(stuDto.courses.size());
         // System.out.println("강의 이름    -    성적");
         stuDto.printAttendance();
@@ -154,6 +162,7 @@ class  StudentDAO extends User
         stuDto.addGrade(_courseName, _grade);
     }
     // =========================================================== Test ===========================================================
+
     void test22(int studentId){
         System.out.println("수강강좌 확인 후 성적 입력");
         int findIndex = -1;
@@ -170,7 +179,7 @@ class  StudentDAO extends User
         String _courseName = input.nextLine();
         System.out.println("출결 입력: ");
         String _attendance = input.nextLine();
-        stuDto.addAttendance(_courseName, _attendance);
+        stuDto.addAttendance(_courseName,1,_attendance);
     }
 
 
