@@ -35,6 +35,14 @@ class ProfessorDAO
 					professorDTO.subject.set(idx, changeValue);
 				}
 			}
+			for(int idx = 0; idx < StudentDAO.stuAry.length; idx++){
+				for(int coursesCount = 0; coursesCount < StudentDAO.stuAry[idx].courses.size(); coursesCount++){
+					if(StudentDAO.stuAry[idx].courses.get(coursesCount).getCoursesName().equals(MyLectureAry.get(choiceLectureIdx-1).getCoursesName())){
+						StudentDAO.stuAry[idx].grade.get(coursesCount).setCourseName(changeValue);
+						StudentDAO.stuAry[idx].attendance.get(coursesCount).setCourseName(changeValue);
+					}
+				}
+			}
             MyLectureAry.get(choiceLectureIdx-1).setCoursesName(changeValue);
         }
         if(choiceMenu == 2){ // 강의장소
@@ -75,11 +83,13 @@ class ProfessorDAO
                 searchMyLectureAry.add(lectureAry.get(idx));
             }
         }
-
+		
         for(Lecture myLecture : searchMyLectureAry){
             System.out.println(cnt + ". " + myLecture.coursesName);
             cnt++;
         }
+		System.out.println();
+		
         return searchMyLectureAry;
     }
 //----------------------------------강의 생성,수정,삭제----------------------------------

@@ -75,7 +75,7 @@ class  StudentDAO extends User
                 break;
             } try {
                 Integer.parseInt(userInput); // 입력이 숫자가 아니면 예외 발생
-                if(Integer.parseInt(userInput) < 1 || Integer.parseInt(userInput) > lectureDB.coursesName.length){		// 입력한 숫자가 1보다 작거나 강의 번호보다 많은 경우
+                if(Integer.parseInt(userInput) < 1 || Integer.parseInt(userInput) > ProfessorDAO.lectureAry.size()){		// 입력한 숫자가 1보다 작거나 강의 번호보다 많은 경우
                     Liner.mLine('#', 31);
                     System.out.println("범위에서 벗어난 번호입니다. 재입력하세요.");
                     Liner.mLine('#', 31);

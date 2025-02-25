@@ -287,6 +287,7 @@ class  Main
 
                 }
 
+
                 if(selectLectureMenu.equals("4")){
                     System.out.println("## "+loginProfessor.name+" 교수님의 담당 강의 ##");
                     searchMyLectureAry = professorDao.viewMyLecture(loginProfessor);

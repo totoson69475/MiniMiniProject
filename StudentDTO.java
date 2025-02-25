@@ -7,7 +7,7 @@ class  StudentDTO extends User
 
     int year;
     ArrayList<Lecture> courses = new ArrayList<>();					// 수강 과목
-    ArrayList<LectureGrade> grade = new ArrayList<>();					// 과목 + 성적
+    public ArrayList<LectureGrade> grade = new ArrayList<>();					// 과목 + 성적
     ArrayList<LectureAttendance> attendance = new ArrayList<>();		// 과목 + 출석
 
     public StudentDTO(String id, String password, String name, String phoneNumber,
